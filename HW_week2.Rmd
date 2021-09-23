@@ -1,0 +1,80 @@
+---
+title: "HW_week2"
+author: "SHUYUAN JIA"
+date: "9/19/2021"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+options(warn=-1)
+```
+
+## GitHub URL
+
+*https://github.com/Shuyuan301/STAT433*
+
+## Download Bridge Dataset in WI
+
+**Firstly, I use Microsoft Excel to convert a txt file to an excel file.**
+```{r}
+library("readxl")
+my_data <- read_excel("WI20.xlsx")
+head(my_data)
+colnames(my_data) #check column names and pick the variables I'd like to use
+```
+## Making a CSV File 
+
+**Then, I made a csv file with Bridge ID, Built Year, County Code, Deck Condition Rating, Superstructure Condition Rating, Substructure Condition Rating, and Operating Rating.**
+
+```{r}
+df <- data.frame (col_1 = my_data['STRUCTURE_NUMBER_008'],
+                  col_2 = my_data['YEAR_BUILT_027'],
+                  col_3 = my_data['COUNTY_CODE_003'],
+                  col_4 = my_data['DECK_COND_058'],
+                  col_5 = my_data['SUPERSTRUCTURE_COND_059'],
+                  col_6 = my_data['SUBSTRUCTURE_COND_060'],
+                  col_7 = my_data['OPERATING_RATING_064'])
+
+colnames(df) <- c('Bridge_ID','Built_Year','County_Code','Deck_Cond',
+                  'Superstructure_Cond','Substructure_Cond','Operating_Rating')
+
+write.csv(df,'WI_Bridge_data.csv')
+
+```
+
+```{r}
+data = read.csv('WI_Bridge_data.csv')
+head(data)
+```
+
+## Plotting
+
+**I would like to figure out if there is any relationship between built year and operating rating.**
+
+Plot by using ggplot:
+```{r}
+library(ggplot2)
+ggplot(data, aes(x=Built_Year, y=Operating_Rating)) + geom_point(color='orange')+
+  labs(x = "Built Year",y = "Operating Rating")
+```
+From the above plot, we can see that it seems the later the bridge is built, the higher the operating rating is.
+
+
+**Also, I would like to check if there is any relationship between Deck condition rating and operating rating**
+```{r}
+library(ggplot2)
+ggplot(data, aes( x=Deck_Cond, y=Operating_Rating)) + geom_boxplot(color='purple')+
+  labs(x = "Deck Condition Rating",y = "Operating Rating")
+```
+From this plot, we can see that the bridges with deck condition rating larger than 6 got better median operating ratings than the bridges with deck condition rating below or equal to 5.
+
+**Try to build a basic model to predict the operating rating by using condition ratings**
+```{r}
+data$Superstructure_Cond <- as.numeric(data$Superstructure_Cond)
+data$Substructure_Cond <- as.numeric(data$Substructure_Cond)
+
+model = lm(Operating_Rating ~ Superstructure_Cond + Substructure_Cond, data = data)
+summary(model)
+```
+

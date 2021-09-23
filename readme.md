@@ -1,1 +1,1 @@
-Hi there, this is Megan!!
+Hi there, I am Shuyuan(Megan) Jia! Here is all my homework and projects for STAT433 :)
